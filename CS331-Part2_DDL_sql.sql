@@ -1,0 +1,93 @@
+
+CREATE TABLE `department` (
+  `deptName` varchar(45) NOT NULL,
+  PRIMARY KEY (`deptName`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1
+
+CREATE TABLE `Empolyee` (
+  `empID` int(11) NOT NULL,
+  `empName` varchar(45) NOT NULL,
+  `wage` decimal(13,2) NOT NULL,
+  `isManager` tinyint(4) NOT NULL,
+  `storeID` int(11) NOT NULL,
+  PRIMARY KEY (`empID`),
+  KEY `empStoreID_idx` (`storeID`),
+  CONSTRAINT `empStoreID` FOREIGN KEY (`storeID`) REFERENCES `Store` (`storeID`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=latin1
+
+CREATE TABLE `Inventory` (
+  `storeID` int(11) NOT NULL,
+  `itemID` int(11) NOT NULL,
+  `quantity` int(11) NOT NULL,
+  `price` decimal(10,2) NOT NULL,
+  PRIMARY KEY (`storeID`,`itemID`),
+  KEY `item_idx` (`itemID`),
+  KEY `iventItem_idx` (`itemID`),
+  CONSTRAINT `Ivent_item` FOREIGN KEY (`itemID`) REFERENCES `Item` (`itemID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `Ivent_store` FOREIGN KEY (`storeID`) REFERENCES `Store` (`storeID`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=latin1
+
+CREATE TABLE `Item` (
+  `itemID` int(11) NOT NULL,
+  `itemName` varchar(45) NOT NULL,
+  `deptName` varchar(45) NOT NULL,
+  PRIMARY KEY (`itemID`),
+  KEY `itemDept_idx` (`deptName`),
+  CONSTRAINT `itemDept` FOREIGN KEY (`deptName`) REFERENCES `department` (`deptName`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=latin1
+
+CREATE TABLE `LineItem` (
+  `itemID` int(11) NOT NULL,
+  `time` time NOT NULL,
+  `date` date NOT NULL,
+  `empID` int(11) NOT NULL,
+  `quantity` int(11) DEFAULT NULL,
+  PRIMARY KEY (`itemID`,`empID`,`date`,`time`),
+  KEY `LineIt_empID_idx` (`empID`),
+  KEY `LineIt_trans_idx` (`time`,`date`,`empID`),
+  CONSTRAINT `LineIt_empID` FOREIGN KEY (`empID`) REFERENCES `Empolyee` (`empID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `LineIt_item` FOREIGN KEY (`itemID`) REFERENCES `Item` (`itemID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `LineIt_trans` FOREIGN KEY (`time`, `date`, `empID`) REFERENCES `Transaction` (`time`, `date`, `empID`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=latin1
+
+CREATE TABLE `Member` (
+  `memberID` int(11) NOT NULL,
+  `memberName` varchar(45) NOT NULL,
+  PRIMARY KEY (`memberID`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1
+
+CREATE TABLE `Store` (
+  `storeID` int(11) NOT NULL,
+  `address` varchar(45) NOT NULL,
+  PRIMARY KEY (`storeID`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1
+
+CREATE TABLE `StoreDepartment` (
+  `storeID` int(11) NOT NULL,
+  `deptName` varchar(45) NOT NULL,
+  PRIMARY KEY (`storeID`,`deptName`),
+  KEY `StoDept_deptName_idx` (`deptName`),
+  CONSTRAINT `StoDept_deptName` FOREIGN KEY (`deptName`) REFERENCES `department` (`deptName`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `StoDept_store` FOREIGN KEY (`storeID`) REFERENCES `Store` (`storeID`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=latin1
+
+CREATE TABLE `Traning` (
+  `empID` int(11) NOT NULL,
+  `deptName` varchar(45) NOT NULL,
+  PRIMARY KEY (`empID`,`deptName`),
+  KEY `Tran_deptName_idx` (`deptName`),
+  CONSTRAINT `Train_emp` FOREIGN KEY (`empID`) REFERENCES `Empolyee` (`empID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `Tran_deptName` FOREIGN KEY (`deptName`) REFERENCES `department` (`deptName`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=latin1
+
+CREATE TABLE `Transaction` (
+  `time` time NOT NULL,
+  `date` date NOT NULL,
+  `empID` int(11) NOT NULL,
+  `memberID` int(11) DEFAULT NULL,
+  PRIMARY KEY (`time`,`date`,`empID`),
+  KEY `transEmpID_idx` (`empID`),
+  KEY `transMebID_idx` (`memberID`),
+  CONSTRAINT `transEmpID` FOREIGN KEY (`empID`) REFERENCES `Empolyee` (`empID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `transMebID` FOREIGN KEY (`memberID`) REFERENCES `Member` (`memberID`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=latin1
